@@ -14,6 +14,8 @@ int numReadBytes = 0;
 int sensorVal1;
 int sensorVal2;
 
+
+//For details of ICubeX commands, check out the firmware API documentation
 static final byte[] ICUBE_RESET = new byte[] { (byte)0xF0, (byte)0x7D, (byte) 0x00, (byte)0x22, (byte)0xF7};
 static final byte[] ICUBE_SET_HOST = new byte[] { (byte)0xF0, (byte)0x7D, (byte) 0x00, (byte)0x5A, (byte)0x00, (byte)0xF7};
 
@@ -30,7 +32,9 @@ void setup() {
   size(640, 360);
   int idx = -1;
 
-  //go through list and look for port
+  //go through list and look for serial port.
+  // NOTE: on windows it will be a COMX port, and the code
+  // below will have the be modified accordingly.
   for (int i=0; i<Serial.list().length; i++) {
     //print(Serial.list()[i]);
     println("");
@@ -41,29 +45,37 @@ void setup() {
     }
   }
 
-  //connect to the first available port
+  //connect to the first available ICubeX port
   if (idx != -1) {
     myPort = new Serial(this, Serial.list()[idx], 115200);
     println("opening port...");
 
-    //reboot and set up sensor
-    println("sending host cmd");
-    myPort.write(ICUBE_SET_HOST);
-
+    //Reboot and set up sensor
     println("sending reset");
     myPort.write(ICUBE_RESET);
-
+    
+    println("sending host cmd");
+    myPort.write(ICUBE_SET_HOST);
+    
     delay(1000);
   }
 }
 
 void serialEvent(Serial myPort) {
+  
+  //this method keeps track of incoming bytes
+  // and assembles a complete message.
+  // NOTE: we're not doing overflow checking so
+  // assume data coming from digitizer is correct
+  
   //print(String.format("%02x ", inByte));
   inByte = (byte) myPort.read();
   readBuffer[numReadBytes] = inByte;
   numReadBytes++;
   if (inByte == (byte)0xf7)
   {
+    //If we have more than two sensors on, the positions
+    // of sensor values will have to be adjusted.
     for (int i=0; i<numReadBytes; i++) {
       //print(String.format("%02x ", readBuffer[i]));
       sensorVal1 = (int) readBuffer[4];
