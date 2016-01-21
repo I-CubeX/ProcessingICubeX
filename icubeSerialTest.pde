@@ -99,6 +99,7 @@ void draw() {
 
 void mousePressed()
 {
+  //we toggle the sensors each time the mouse is pressed
   isOn = !isOn;
   if (isOn) {
 
@@ -111,6 +112,9 @@ void mousePressed()
   println("turning on sensor 0");
   //myPort.write(ICUBE_STREAM0);
 }
+
+//this is modified from the Basic/Color/WaveGradient example, 
+// just to show some stuff on screen that react to sensor input
 
 void setGrad() {
   PImage gradient = createImage((int)(width*freq_mod), (int)(height*freq_mod), RGB);
