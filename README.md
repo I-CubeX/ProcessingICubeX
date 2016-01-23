@@ -1,4 +1,4 @@
-##Processing Interface for ICubeX Digitizer 
+##Processing Interface for ICubeX digitizers 
 
 Tested with: USB-microDig and Wi-microDig
 
