@@ -39,6 +39,13 @@ void setup() {
     //print(Serial.list()[i]);
     println("");
     if (Serial.list()[i].equals("/dev/tty.SLAB_USBtoUART")) {
+      // ***********************
+      // NOTE: for the wi-microDig will be something like: 
+      //            "/dev/tty.I-CubeXWi-microDig0XXX-"
+      // which is the name of the bluetooth port.
+      // On windows, it will be called COMX
+      // where XXX is the serial number
+      // ***********************
       println("found icube at idx = " +i);
       idx = i;
       break;

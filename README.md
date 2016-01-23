@@ -1,6 +1,7 @@
-##Processing Interface for ICubeX Digitizer
+##Processing Interface for ICubeX Digitizer (tested with the USB and Wi-microDig)
 
-This is a small demo example showing how one might start talking to an ICubeX digitizer directly in a standalone Processing sketch with minimal external dependencies. The only thing needed is the [serial  driver](https://www.silabs.com/products/mcu/Pages/USBtoUARTBridgeVCPDrivers.aspx) driver for the USB-microDig if it hasn't been installed on your system already. The virtual bluetooth COM port should work for the Wi-microDig as well.
+This is a small demo example showing how one might start talking to an ICubeX digitizer directly in a standalone Processing sketch with minimal external dependencies. The only thing needed is the [serial  driver](https://www.silabs.com/products/mcu/Pages/USBtoUARTBridgeVCPDrivers.aspx) driver for the USB-microDig if it hasn't been installed on your system already. The virtual bluetooth COM port will work as well for the Wi-microDig.
+
 
 In this example we manually construct the configuration messages required to activate two analog sensor ports (1 and 2, which are the second and third physical connectors), and read data from it.
 
