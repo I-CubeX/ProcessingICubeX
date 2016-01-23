@@ -11,6 +11,6 @@ This application is designed as a proof of concept with minimal abstraction and 
 
 Any questions/comments/suggestions please let us know!
 
-The Infusion Team.
+The I-CubeX Team
 
-Jan 2016
+January 2016
