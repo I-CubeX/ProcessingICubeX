@@ -8,6 +8,9 @@ float amplitude = 30;
 float fillGap = 2.5;
 float freq_mod = 1.0;
 
+long lastTime;
+long packetsReceived;
+
 byte[] readBuffer = new byte[32];
 int numReadBytes = 0;
 
@@ -66,8 +69,8 @@ void setup() {
   for (int i=0; i<Serial.list().length; i++) {
     //print(Serial.list()[i]);
     println("");
+    
     if (Serial.list()[i].equals("/dev/tty.SLAB_USBtoUART")) {
-      //if (Serial.list()[i].equals("/dev/tty.I-CubeXWi-microDig0459-")) {
       // ***********************
       // NOTE: for the wi-microDig will be something like: 
       //            "/dev/tty.I-CubeXWi-microDig0XXX-"
@@ -93,10 +96,13 @@ void setup() {
     println("sending host cmd");
     myPort.write(ICUBE_SET_HOST);
 
-    myPort.write(ICUBE_STREAM_INT1);
+    //myPort.write(ICUBE_STREAM_INT10); //100hz
+    myPort.write(ICUBE_STREAM_INT1);    //1khz
 
 
     delay(1000);
+    lastTime = millis();
+    packetsReceived = 0;
   }
 }
 
@@ -123,9 +129,10 @@ void serialEvent(Serial myPort) {
       //sensorVal3 = (int) readBuffer[6]
       //    and so on
 
-      println("sens 1", (int)readBuffer[4]);
+      //println("sens 1", (int)readBuffer[4]);
     }
     numReadBytes = 0;
+    packetsReceived++;
     //println("");
   }
   if (inByte == 0xF7) {
@@ -134,6 +141,11 @@ void serialEvent(Serial myPort) {
 }
 
 void draw() {
+
+  long elapsed = millis() - lastTime;
+  println("elpased = ", elapsed, "PPS = ", packetsReceived*1000/elapsed);
+  packetsReceived = 0;
+  lastTime = millis();
 
   amplitude = map(sensorVal1, 1, 127, 2, 50);
   freq_mod = map(sensorVal2, 1, 127, 1.2, 4);
@@ -150,10 +162,20 @@ void mousePressed()
     myPort.write(ICUBE_STREAM1);
     myPort.write(ICUBE_STREAM2);
     myPort.write(ICUBE_STREAM3);
+    myPort.write(ICUBE_STREAM4);
+    myPort.write(ICUBE_STREAM5);
+    myPort.write(ICUBE_STREAM6);
+    myPort.write(ICUBE_STREAM7);
+    myPort.write(ICUBE_STREAM8);
   } else {
     myPort.write(ICUBE_STOP1);
     myPort.write(ICUBE_STOP2);
     myPort.write(ICUBE_STOP3);
+    myPort.write(ICUBE_STOP4);
+    myPort.write(ICUBE_STOP5);
+    myPort.write(ICUBE_STOP6);
+    myPort.write(ICUBE_STOP7);
+    myPort.write(ICUBE_STOP8);
   }
   println("toggle sensor");
 }
