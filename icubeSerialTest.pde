@@ -28,6 +28,22 @@ static final byte[] ICUBE_STOP2 = new byte[] { (byte)0xF0, (byte)0x7D, (byte) 0x
 static final byte[] ICUBE_STREAM3 = new byte[] { (byte)0xF0, (byte)0x7D, (byte) 0x00, (byte) 0x01, (byte) 0x42, (byte)0xF7};
 static final byte[] ICUBE_STOP3 = new byte[] { (byte)0xF0, (byte)0x7D, (byte) 0x00, (byte) 0x01, (byte) 0x02, (byte)0xF7};
 
+static final byte[] ICUBE_STREAM4 = new byte[] { (byte)0xF0, (byte)0x7D, (byte) 0x00, (byte) 0x01, (byte) 0x43, (byte)0xF7};
+static final byte[] ICUBE_STOP4 = new byte[] { (byte)0xF0, (byte)0x7D, (byte) 0x00, (byte) 0x01, (byte) 0x03, (byte)0xF7};
+
+static final byte[] ICUBE_STREAM5 = new byte[] { (byte)0xF0, (byte)0x7D, (byte) 0x00, (byte) 0x01, (byte) 0x44, (byte)0xF7};
+static final byte[] ICUBE_STOP5 = new byte[] { (byte)0xF0, (byte)0x7D, (byte) 0x00, (byte) 0x01, (byte) 0x04, (byte)0xF7};
+
+static final byte[] ICUBE_STREAM6 = new byte[] { (byte)0xF0, (byte)0x7D, (byte) 0x00, (byte) 0x01, (byte) 0x45, (byte)0xF7};
+static final byte[] ICUBE_STOP6 = new byte[] { (byte)0xF0, (byte)0x7D, (byte) 0x00, (byte) 0x01, (byte) 0x05, (byte)0xF7};
+
+static final byte[] ICUBE_STREAM7 = new byte[] { (byte)0xF0, (byte)0x7D, (byte) 0x00, (byte) 0x01, (byte) 0x46, (byte)0xF7};
+static final byte[] ICUBE_STOP7 = new byte[] { (byte)0xF0, (byte)0x7D, (byte) 0x00, (byte) 0x01, (byte) 0x06, (byte)0xF7};
+
+static final byte[] ICUBE_STREAM8 = new byte[] { (byte)0xF0, (byte)0x7D, (byte) 0x00, (byte) 0x01, (byte) 0x47, (byte)0xF7};
+static final byte[] ICUBE_STOP8 = new byte[] { (byte)0xF0, (byte)0x7D, (byte) 0x00, (byte) 0x01, (byte) 0x07, (byte)0xF7};
+
+
 //1 ms sample interval (1khz rate)
 static final byte[] ICUBE_STREAM_INT1 = new byte[] { (byte)0xF0, (byte)0x7D, (byte) 0x00, (byte) 0x03, (byte) 0x00, (byte) 0x01, (byte)0xF7};
 //10 ms sample interval (100hz rate)
@@ -51,7 +67,7 @@ void setup() {
     //print(Serial.list()[i]);
     println("");
     if (Serial.list()[i].equals("/dev/tty.SLAB_USBtoUART")) {
-    //if (Serial.list()[i].equals("/dev/tty.I-CubeXWi-microDig0459-")) {
+      //if (Serial.list()[i].equals("/dev/tty.I-CubeXWi-microDig0459-")) {
       // ***********************
       // NOTE: for the wi-microDig will be something like: 
       //            "/dev/tty.I-CubeXWi-microDig0XXX-"
@@ -76,8 +92,8 @@ void setup() {
 
     println("sending host cmd");
     myPort.write(ICUBE_SET_HOST);
-    
-    myPort.write(ICUBE_STREAM_INT10);
+
+    myPort.write(ICUBE_STREAM_INT1);
 
 
     delay(1000);
@@ -100,16 +116,21 @@ void serialEvent(Serial myPort) {
     //If we have more than two sensors on, the positions
     // of sensor values will have to be adjusted.
     for (int i=0; i<numReadBytes; i++) {
-      print(String.format("%02x ", readBuffer[i]));
+      //print(String.format("%02x ", readBuffer[i]));
       sensorVal1 = (int) readBuffer[4];
       sensorVal2 = (int) readBuffer[5];
-      //println("sens 1", (int)readBuffer[4]);
+      //for rest of sensors:
+      //sensorVal3 = (int) readBuffer[6]
+      //    and so on
+
+      println("sens 1", (int)readBuffer[4]);
     }
     numReadBytes = 0;
-    println("");
+    //println("");
   }
-  if (inByte == 0xF7)
-    println("");
+  if (inByte == 0xF7) {
+    //println("");
+  }
 }
 
 void draw() {
