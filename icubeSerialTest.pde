@@ -19,11 +19,23 @@ int sensorVal2;
 static final byte[] ICUBE_RESET = new byte[] { (byte)0xF0, (byte)0x7D, (byte) 0x00, (byte)0x22, (byte)0xF7};
 static final byte[] ICUBE_SET_HOST = new byte[] { (byte)0xF0, (byte)0x7D, (byte) 0x00, (byte)0x5A, (byte)0x00, (byte)0xF7};
 
-static final byte[] ICUBE_STREAM1 = new byte[] { (byte)0xF0, (byte)0x7D, (byte) 0x00, (byte) 0x01, (byte) 0x41, (byte)0xF7};
-static final byte[] ICUBE_STOP1 = new byte[] { (byte)0xF0, (byte)0x7D, (byte) 0x00, (byte) 0x01, (byte) 0x01, (byte)0xF7};
+static final byte[] ICUBE_STREAM1 = new byte[] { (byte)0xF0, (byte)0x7D, (byte) 0x00, (byte) 0x01, (byte) 0x40, (byte)0xF7};
+static final byte[] ICUBE_STOP1 = new byte[] { (byte)0xF0, (byte)0x7D, (byte) 0x00, (byte) 0x01, (byte) 0x00, (byte)0xF7};
 
-static final byte[] ICUBE_STREAM2 = new byte[] { (byte)0xF0, (byte)0x7D, (byte) 0x00, (byte) 0x01, (byte) 0x42, (byte)0xF7};
-static final byte[] ICUBE_STOP2 = new byte[] { (byte)0xF0, (byte)0x7D, (byte) 0x00, (byte) 0x01, (byte) 0x02, (byte)0xF7};
+static final byte[] ICUBE_STREAM2 = new byte[] { (byte)0xF0, (byte)0x7D, (byte) 0x00, (byte) 0x01, (byte) 0x41, (byte)0xF7};
+static final byte[] ICUBE_STOP2 = new byte[] { (byte)0xF0, (byte)0x7D, (byte) 0x00, (byte) 0x01, (byte) 0x01, (byte)0xF7};
+
+static final byte[] ICUBE_STREAM3 = new byte[] { (byte)0xF0, (byte)0x7D, (byte) 0x00, (byte) 0x01, (byte) 0x42, (byte)0xF7};
+static final byte[] ICUBE_STOP3 = new byte[] { (byte)0xF0, (byte)0x7D, (byte) 0x00, (byte) 0x01, (byte) 0x02, (byte)0xF7};
+
+//1 ms sample interval (1khz rate)
+static final byte[] ICUBE_STREAM_INT1 = new byte[] { (byte)0xF0, (byte)0x7D, (byte) 0x00, (byte) 0x03, (byte) 0x00, (byte) 0x01, (byte)0xF7};
+//10 ms sample interval (100hz rate)
+static final byte[] ICUBE_STREAM_INT10 = new byte[] { (byte)0xF0, (byte)0x7D, (byte) 0x00, (byte) 0x03, (byte) 0x00, (byte) 0x0A, (byte)0xF7};
+//500 ms sample interval (2 hz rate)
+static final byte[] ICUBE_STREAM_INT500 = new byte[] { (byte)0xF0, (byte)0x7D, (byte) 0x00, (byte) 0x03, (byte) 0x01, (byte) 0xF4, (byte)0xF7};
+//1000 ms sample interval (1 hz rate)
+static final byte[] ICUBE_STREAM_INT1000 = new byte[] { (byte)0xF0, (byte)0x7D, (byte) 0x00, (byte) 0x03, (byte) 0x03, (byte) 0xE8, (byte)0xF7};
 
 
 void setup() {
@@ -39,6 +51,7 @@ void setup() {
     //print(Serial.list()[i]);
     println("");
     if (Serial.list()[i].equals("/dev/tty.SLAB_USBtoUART")) {
+    //if (Serial.list()[i].equals("/dev/tty.I-CubeXWi-microDig0459-")) {
       // ***********************
       // NOTE: for the wi-microDig will be something like: 
       //            "/dev/tty.I-CubeXWi-microDig0XXX-"
@@ -60,21 +73,24 @@ void setup() {
     //Reboot and set up sensor
     println("sending reset");
     myPort.write(ICUBE_RESET);
-    
+
     println("sending host cmd");
     myPort.write(ICUBE_SET_HOST);
     
+    myPort.write(ICUBE_STREAM_INT10);
+
+
     delay(1000);
   }
 }
 
 void serialEvent(Serial myPort) {
-  
+
   //this method keeps track of incoming bytes
   // and assembles a complete message.
   // NOTE: we're not doing overflow checking so
   // assume data coming from digitizer is correct
-  
+
   //print(String.format("%02x ", inByte));
   inByte = (byte) myPort.read();
   readBuffer[numReadBytes] = inByte;
@@ -84,15 +100,16 @@ void serialEvent(Serial myPort) {
     //If we have more than two sensors on, the positions
     // of sensor values will have to be adjusted.
     for (int i=0; i<numReadBytes; i++) {
-      //print(String.format("%02x ", readBuffer[i]));
+      print(String.format("%02x ", readBuffer[i]));
       sensorVal1 = (int) readBuffer[4];
       sensorVal2 = (int) readBuffer[5];
+      //println("sens 1", (int)readBuffer[4]);
     }
     numReadBytes = 0;
-    //println("");
+    println("");
   }
-  //if (inByte == 0xF7)
-  //  println("");
+  if (inByte == 0xF7)
+    println("");
 }
 
 void draw() {
@@ -101,7 +118,7 @@ void draw() {
   freq_mod = map(sensorVal2, 1, 127, 1.2, 4);
 
   setGrad(); //from examples; draw something pretty!
-  println(sensorVal1+" "+sensorVal2);
+  //println(sensorVal1+" "+sensorVal2);
 }
 
 void mousePressed()
@@ -109,15 +126,15 @@ void mousePressed()
   //we toggle the sensors each time the mouse is pressed
   isOn = !isOn;
   if (isOn) {
-
     myPort.write(ICUBE_STREAM1);
     myPort.write(ICUBE_STREAM2);
+    myPort.write(ICUBE_STREAM3);
   } else {
     myPort.write(ICUBE_STOP1);
     myPort.write(ICUBE_STOP2);
+    myPort.write(ICUBE_STOP3);
   }
-  println("turning on sensor 0");
-  //myPort.write(ICUBE_STREAM0);
+  println("toggle sensor");
 }
 
 //this is modified from the Basic/Color/WaveGradient example, 
